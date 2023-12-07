@@ -1,0 +1,32 @@
+/* Las proyecciones nos sirven para elegir que campos del documentos queremos o no mostrar 
+en el resultado de una consulta */
+
+// Utilizaremos la base de datos sample_trip y la coleccion trips
+
+// Definiendo los campos que queremos traer
+db.trips.find(
+    {},
+    {
+     tripduration: 1, bikeid: 1, 'birth year': 1   
+    }
+).limit(1)
+
+
+// Por defecto el _id siempre se muestra y si queremos ocultarlo debemos definirlo
+db.trips.find(
+    {},
+    {
+     tripduration: 1, bikeid: 1, 'birth year': 1, _id: 0   
+    }
+).limit(1)
+
+
+// Definiendo los campos que no queremos traer
+db.trips.find(
+    {},
+    {
+     tripduration: 0, bikeid: 0, 'birth year': 0   
+    }
+).limit(1)
+
+// Dentro Project también se puede colocar true o false en vez de 1 y 0

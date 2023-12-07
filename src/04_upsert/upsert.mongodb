@@ -1,0 +1,48 @@
+/* upsert nos permite agregar un elemento en un array dentro de un documento. 
+Lo que lo hace especial es que si el documento no existe, este operador lo crea, 
+y si ya existe, inserta los nuevo elementos del array sobre el documento existente. */
+
+// Para visualizar como funciona insertaremos los siguientes datos de almacenamiento de informacion de unos sensores
+db.iot.insertMany([
+    { _id: 1, sensor: "A001", date: "2022-01-01", readings: [1,2,3,4] },
+    { _id: 2, sensor: "A001", date: "2022-01-02", readings: [1,2,3,4] },
+    { _id: 3, sensor: "A002", date: "2022-01-01", readings: [1,2,3,4] },
+    { _id: 4, sensor: "A002", date: "2022-01-02", readings: [1,2,3,4] },
+  ])
+
+// Agregaremos un 3er sensor y simularemos que cambia 3 veces de valor en un dia con la sentencia upsert para observar su funcionamiento
+// Primera lectura sensor 3
+db.iot.updateOne({
+    sensor: "A003",
+    date: "2022-01-04",
+}, {
+    $push: {
+        readings: 3.3
+    }
+},{
+    upsert: true 
+})
+
+// Segunda lectura sensor 3
+db.iot.updateOne({
+    sensor: "A003",
+    date: "2022-01-04",
+}, {
+    $push: {
+        readings: 5
+    }
+},{
+    upsert: true 
+})
+
+// Tercera lectura sensor 3
+db.iot.updateOne({
+    sensor: "A003",
+    date: "2022-01-04",
+}, {
+    $push: {
+        readings: 2.5
+    }
+},{
+    upsert: true 
+})

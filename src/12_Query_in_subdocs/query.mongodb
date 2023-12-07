@@ -1,0 +1,48 @@
+/* 
+Las “query in subdocs” en MongoDB se refieren a la capacidad de realizar consultas o 
+búsquedas en documentos secundarios (subdocumentos) dentro de un documento principal.
+
+En MongoDB, los documentos pueden contener otros documentos anidados, 
+lo que permite estructurar la información de manera más compleja y jerárquica. 
+Cuando se realizan consultas en subdocumentos, se pueden buscar documentos que cumplan ciertas condiciones 
+en campos específicos de los subdocumentos, en lugar de buscar solo en los campos del documento principal.
+
+Para realizar una consulta en subdocumentos, se utiliza la notacion de punto (".") 
+para indicar el campo específico del subdocumento que se desea buscar. 
+
+Las consultas en subdocumentos pueden ser muy útiles en situaciones en las que se tiene información estructurada jerárquicamente, 
+como en la información de direcciones de un cliente en un sistema de comercio electrónico.
+
+Trabajaremos con la base de datos sample_training y la coleccion companies que tiene un campo con subdocumentos llamado relationships 
+*/
+
+
+// Podemos entrar en un subdocumento colocando la posicion del mismo dendro del array (empieza en 0)
+/* En esta consulta buscamos en el campo 'relationships', subdocumento 0, campo persona 
+y dentro del campo persona que 'first_name' = 'Michael' y 'last_name = Howell' */
+  
+db.companies.find({
+    $and: [ 
+        {"relationships.0.person.first_name": "Michael"},
+        {"relationships.0.person.last_name": "Howell"}
+ ]},
+{
+    relationships: 1
+})
+
+
+/* Tambien podemos usar el operador $elemMatch si no queremos especificar un subdocumento 
+ino que busque en todos los subdocumentos del documento deseado */
+
+/* Mismo query anterior pero esta vez buscara en todos los subdocumentos de relationships 
+y no solo en el subdocumento 0 */
+db.companies.find({
+    relationships: {
+        $elemMatch: {
+            $and: [ {"person.first_name": "Michael"}, {"person.last_name": "Howell"} ]
+        }
+    }
+},
+{
+    relationships: 1
+})

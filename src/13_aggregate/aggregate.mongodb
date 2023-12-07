@@ -1,0 +1,26 @@
+// Es una herramienta pensada para realizar busqueda de datos mucho mas profundos que en el mongo query language que es el que hemos estado viendo, es pensado para procesar y analizar grandes volumenes de datos.
+
+
+// Algunos ejemplos
+// Con esta consulta buscaremos entre todo el listado de hospedajes los que tenga en su amenities "Wifi" 
+db.listingsAndReviews.aggregate([
+    { $match: { amenities: "Wifi"} }, // find
+    { $project: { price: 1, amenities: 1 } } // projection
+])
+
+
+// Con esta consulta buscaremos entre todo el listado de hospedajes los que tenga en su amenities "Wifi" y los agruparemos por paises
+// Es importante que en project se encuentre address ya que estos datos de salida los usaremos como base para el group 
+db.listingsAndReviews.aggregate([
+    { $match: { amenities: "Wifi"} }, // find
+    { $project: { address: 1 } }, // projection
+    { $group: { _id: "$address.country"}} // group by campo
+])
+
+
+// Con esta consulta buscaremos entre todo el listado de hospedajes los que tenga en su amenities "Wifi" y los agruparemos por paises contando cada pais y sumando 1
+db.listingsAndReviews.aggregate([
+    { $match: { amenities: "Wifi"} }, // find
+    { $project: { address: 1 } }, // projection
+    { $group: { _id: "$address.country", count: { $sum: 1 }}} // group by campo y cuenta cada uno de los campos agrupados (= al group de base de datos relacionales)
+])

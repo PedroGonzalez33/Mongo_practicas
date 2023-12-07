@@ -1,0 +1,37 @@
+// Usaremos los siguientes datos para ver como funcionan algunas expresiones regulares
+db.inventory.insertMany([
+    { _id: 1, item: { name: "ab", code: "123", description : "Single line description."    }, qty: 15, tags: ["A", "B", "C"] },
+    { _id: 2, item: { name: "cd", code: "123", description : "First line\nSecond line"     }, qty: 20, tags: ["B"] },
+    { _id: 3, item: { name: "ij", code: "456", description : "Many spaces before     line" }, qty: 25, tags: ["A", "B"] },
+    { _id: 4, item: { name: "xy", code: "456", description : "Multiple\nline description"  }, qty: 30, tags: ["B", "A"] },
+    { _id: 5, item: { name: "mn", code: "000" }, qty: 20, tags: [["A", "B"], "C"] },
+  ])
+
+
+// Las expresiones regulares en MongoDB se colocan entre / /
+
+
+/* / / nos busca todas las coincidencias que sean iguales exactamente al texto, 
+en esta consulta se diferencias mayusculas de minusculas */
+db.inventory.find({"item.description": {$regex: /Single line/}})
+
+
+/* Poner una "i" al final indica que se haga la busqeuda indiferentemente si esta en minuscula o mayuscula, 
+en este caso buscara single line, SINGLE LINE, etc */
+db.inventory.find({"item.description": {$regex: /single LINE/i}})
+
+
+// $ nos devuelve los doc que terminen con la palabra line 
+db.inventory.find({"item.description": {$regex: /line$/i}})
+
+
+// ^ nos devuelve los doc que empiecen con la palabra single
+db.inventory.find({"item.description": {$regex: /^single/i}})
+
+// Igual que la anterior pero con s
+db.inventory.find({"item.description": {$regex: /^s/i}})
+
+
+/* Poner una "m" al final indica multiline, esto significa que nos devuelve los doc que empiecen por s, 
+ignorando si hay salto de linea o no */
+db.inventory.find({"item.description": {$regex: /^s/im}})

@@ -1,0 +1,147 @@
+/* Para actualizar un documento usamos el comando .updateOne()
+este necesita que le pasen el filtro del documento que queremos modificar
+y el operador del tipo de modificacion que haremos */
+
+// Estos operadores pueden ser:
+// $set
+db.my_first_collection.updateOne(
+    {
+        _id: 1
+    },
+    {
+        $set: {
+            name: 'Nuevo name 1',
+            number: 11,
+            nuevo_campo: ['peter', '33'] 
+        }
+    }
+)
+
+// $inc
+db.my_first_collection.updateOne(
+    {
+        _id: 2
+    },
+    {
+        $inc: {
+            number: 20,
+        }
+    }
+)
+
+// $ObjectId
+db.my_first_collection.updateOne(
+    {
+        _id: ObjectId('656e0e579ff7f51314bf8068')
+    },
+    {
+        $set: {
+            name:'Buscando por ID autogenerado',
+        }
+    }
+)
+
+// Entre otros que se encuentran en la documentacion
+
+/* Si queremos actualizar varios documentos al mismo tiempo debemos usar .updateMany()
+tiene practicamente la misma estructura que updateOne, asi que vamos con los operadores */
+
+// $set
+db.zips.updateMany(
+    {        
+        city:'SEATTLE'
+    },
+    {
+        $set: {
+            new_data: 'NEW'  
+        }
+    }
+)
+
+// $inc
+db.zips.updateMany(
+    {        
+        city:'SEATTLE'
+    },
+    {
+        $inc: {
+            pop: 1000  
+        }
+    }
+)
+
+// $rename
+db.zips.updateMany(
+    {        
+        city:'SEATTLE'
+    },
+    {
+        $rename: {
+            new_data: 'data'  
+        }
+    }
+)
+
+// $unset
+db.zips.updateMany(
+    {        
+        city:'SEATTLE'
+    },
+    {
+        $unset: {
+            data: ''  
+        }
+    }
+)
+
+/* Para actualizar arrays en un documento se hace de una manera un poco diferente 
+ya que tiene operadores especiales solo para arrays. Igualmente podemos usar 
+.updateOne y .updateMany */
+
+// $push
+db.inventory.updateOne(
+    {
+        _id: 4
+    }, 
+    {
+        $push: { 
+            tags: "book"
+        }
+})
+
+// $pull
+db.inventory.updateOne(
+    {
+        _id: 4
+    }, 
+    {
+        $pull: { 
+            tags: "electronics"
+        }
+})
+
+// $push $each
+db.inventory.updateOne(
+    {
+        _id: 5
+    }, 
+    {
+        $push: { 
+            tags:{
+              $each:["headphone","wireless"]
+            }
+        }
+})
+
+// $pull $in
+db.inventory.updateMany(
+    {
+       
+    }, 
+    {
+        $pull: { 
+            tags:{
+              $in:["school","book"]
+            }
+        }
+})

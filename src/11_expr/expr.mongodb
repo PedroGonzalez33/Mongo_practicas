@@ -1,0 +1,30 @@
+// Podemos usar este operador para comparar con valores fijos o tambien con otros campos
+
+// En esta consulta buscaremos los documentos cuya tripduration sea igual a 1200
+db.trips.find({
+    $expr: {
+        $eq: ["$tripduration", 1200]
+    }
+})
+
+
+// En esta consulta buscaremos los 'start station id' que sean igual a 'end station id'
+db.trips.find({
+    $expr: {
+        $eq: ["$start station id", "$end station id"]
+    }
+})
+
+
+/* En esta consulta buscaremos los documentos que el 'start station id' sea igual a 'end station id' 
+y tambien que 'tripduration' sea mayor o igual a 1200 */
+db.trips.find({
+    $expr: {
+        $and: [
+            {$eq: ["$start station id", "$end station id"]},
+            { $gte: ["$tripduration", 1200]}
+        ]
+    } 
+})
+
+// Es muy importante que los campos que queramos usar dentro del operador $expr empiecen con $ y esten entre ' ' 

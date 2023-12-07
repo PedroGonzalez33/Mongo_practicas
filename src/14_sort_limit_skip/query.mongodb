@@ -1,0 +1,18 @@
+// .sort()
+/* Este metodo nos ayuda a ordenar los documentes por un campo que le pasemos, 
+este ordenamiento puede ser ascendente (1) o descendente (-1). Similar al ORDER BY de SQL */
+
+/* En esta consulta nos traeremos todos los documentos cuya pop sea >= 120 
+y estos documentos seran ordenados descendentemente segun su pop */
+db.zips.find({ pop: {  $gte: 100 } }).sort({pop: -1})
+
+
+// .limit() y .skip()
+/* .limit() y .skip() funcionan en conjunto ya que .limit() nos sirve para limitar los resultados que mostraremos 
+(igual a LIMIT de SQL) y .skip() nos sirve para saltar los resultdos que no queramos mostrar 
+y a partir de alli nos mostrara los demas (igual a OFFSET de SQL) */
+
+/* En esta consulta buscaremos los documentos cuya pop sea >= 200, 
+mostraremos solo 10 documentos y saltaremos los 4 primeros resultados, 
+estos seran ordenados por pop de manera descendente */
+db.zips.find({ pop: {  $gte: 200 }}).skip(4).limit(10).sort({pop: -1})

@@ -1,0 +1,38 @@
+// Veremos algunos operadores de comparacion, usando los siguientes datos
+db.inventory.insertMany([
+    { _id: 1, item: { name: "ab", code: "123" }, qty: 15, tags: ["A", "B", "C"] },
+    { _id: 2, item: { name: "cd", code: "123" }, qty: 20, tags: ["B"] },
+    { _id: 3, item: { name: "ij", code: "456" }, qty: 25, tags: ["A", "B"] },
+    { _id: 4, item: { name: "xy", code: "456" }, qty: 30, tags: ["B", "A"] },
+    { _id: 5, item: { name: "mn", code: "000" }, qty: 20, tags: [["A", "B"], "C"] },
+  ])
+
+// $eq (=)
+// Usando $eq implicitamente
+// Trae los valores iguales a 20
+db.inventory.find({qty: 20})
+
+// Usando $eq explicitamente 
+// Trae los valores iguales a 20
+db.inventory.find({qty: {$eq: 20}})
+
+
+// $ne (!=) 
+// Trae los valores diferentes a 20
+db.inventory.find({qty: {$ne: 20}})
+
+
+// $gt (>) y $gte (>=)
+// Traera los valores mayores a 25
+db.inventory.find({qty: {$gt: 25}})
+
+// Traera los valores mayores o iguales a 25
+db.inventory.find({qty: {$gte: 25}})
+
+
+// $lt(<) y $lte (<=)
+// Traera los valores menores a 20
+db.inventory.find({qty: {$lt: 20}})
+
+// Traera los valores menores o iguales a 20
+db.inventory.find({qty: {$lte: 20}})

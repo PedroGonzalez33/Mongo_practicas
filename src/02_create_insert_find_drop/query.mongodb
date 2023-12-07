@@ -1,0 +1,32 @@
+// Creando la base de datos primeros_pasos_mongo en terminal
+// use primeros_pasos_mongo
+
+// o
+use('primeros_pasos_mongo')
+
+
+// mostrar base de datos disponibles en terminal
+// show dbs
+
+/* Para crear una coleccion usamos 2 formas
+usando creataCollection o insertanto un documento a una coleccion inexistente */
+
+// 1) usando createCollection
+db.createCollection(my_first_collection)
+
+// 2) Insertar solo un documento en una coleccion inexistente que se creara automaticamente
+db.my_second_collection.insertOne({name:'peter', numero:33})
+
+/* .insertOne solo sirve para insertar un documento, 
+si le pasas como parametro 2 documentos los agregara como un solo gran documento */
+db.my_second_collection.insertOne([{name:'peter', numero:34}, {name:'peter', numero:35}])
+// Se agregara el documento como un solo documento completo 
+
+// Si queremos insertar mas de un documento debemos usar .insertMany()
+db.my_first_collection.insertMany([{_id:1, name: 'name 1', number:1},{_id:2, name: 'name 2', number:2}, {_id:3, name: 'name 3', number:3}])
+
+// Para ver el contenido de una coleccion usamos .find() en la coleccion que queremos ver
+db.my_second_collection.find()
+
+// Para borrar los datos de una coleccion usamos .drop()
+db.my_first_collection.drop()

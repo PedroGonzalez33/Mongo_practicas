@@ -1,0 +1,60 @@
+// Veremos algunos operadores logicos que nos funcionan en MongoDB
+
+// $and
+// $and de forma implicita
+/* En esta consulta buscamos las coincidencia en los datos que tengan el nombre del sector = "Tax Preparers - 891" y el result = "Unable to Locate", 
+solamente traera los documentos cuando ambas condiciones sean True */
+db.inspections.find({
+    sector: "Tax Preparers - 891",
+    result: "Unable to Locate"
+})
+
+// $and de forma exlicita
+// Esta consulta es exactamente igual a la anterior pero usando el $and explicitamente
+db.inspections.find({
+    $and: [
+         {sector: "Tax Preparers - 891"},
+         {result: "Unable to Locate"}        
+    ]
+})
+
+
+// $or
+/* En esta consulta buscamos las coincidencia en los datos que tengan el nombre del sector = "Tax Preparers - 891" o el result = "Unable to Locate", 
+traera los documentos que cumplan una u otra condicion, es decir cuando una de las condiciones sea True */
+db.inspections.find({
+    $or: [
+        {sector: "Tax Preparers - 891"},
+        {result: "Unable to Locate"}        
+    ]
+})
+
+
+// $nor
+/* En esta consulta buscamos las coincidencia en los datos que no tengan o el nombre del sector = "Tax Preparers - 891" o el result = "Unable to Locate", 
+traera los documentos que no cumplan una u otra condicion, es decir cuando una de las condiciones sea True no mostrara esa coincidencia */
+db.inspections.find({
+    $nor: [
+        {sector: "Tax Preparers - 891"},
+        {result: "Unable to Locate"}        
+    ]
+})
+
+
+// $not
+// En esta consulta buscamos documentos en donde result no sea igual a la expresion regular que le pasamos
+db.inspections.find({
+    result: { $not: {$regex: /Unable to Locate/}}        
+})
+
+
+//Sin problemas podemos combinar varios operadores logicos
+
+/* En esta consulta buscamos las coincidencia en los datos que tengan el airplate = "E70" y la segunda condicion sea o el dst_airport = "BOG" o src_airport = "BOG", 
+la primera condicion tiene que cumplirse si o si ya que es una $and y la segunda condicion puede cumplirse o una condicion o la otra ya que es un $or */
+db.routes.find({
+    $and: [ {airplane: "E70"} , {
+    $or: [ { dst_airport: "BOG" },
+           { src_airport: "BOG" } ]
+    }]
+})
