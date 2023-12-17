@@ -1,0 +1,53 @@
+// Modificar Productos
+// Modificaremos los productos para que cada uno tenga referencia a una o varias tiendas
+// Actualizando Product 1
+db.products.updateOne(
+    {_id: ObjectId('657dad00b6ff7894119b461b')},
+    {
+        $set: {
+            stores_ids: [
+                ObjectId("657db00947199d276ed32fbc"),
+                ObjectId("657db00947199d276ed32fbd")
+            ]
+        }
+    }
+)
+
+
+// Actualizando Product 2
+db.products.updateOne(
+    {_id: ObjectId('657dad00b6ff7894119b461c')},
+    {
+        $set: {
+            stores_ids: [
+                ObjectId("657db00947199d276ed32fbd")
+            ]
+        }
+    }
+)
+
+
+// Actualizando Product 3
+db.products.updateOne(
+    {_id: ObjectId('657dad00b6ff7894119b461d')},
+    {
+        $set: {
+            stores_ids: [
+                ObjectId("657db00947199d276ed32fbd")
+            ]
+        }
+    }
+)
+
+
+// Usando LookUp
+db.products.aggregate([
+    {
+        $lookup: {
+            from: 'stores',
+            localField: 'stores_ids', 
+            foreignField: '_id',
+            as: 'stores'
+       }
+    }
+])

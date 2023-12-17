@@ -1,0 +1,19 @@
+// Insercion
+db.orders.insertOne({
+    user_id: ObjectId('657cceae4655592faef19f96'),
+    date: '2020-12-12',
+    items: [
+        {
+            name: 'Product 1',
+            qty: 1,
+            price: 12,
+            product_id: ObjectId('657dad00b6ff7894119b461b')
+        },
+        {
+            name: 'Product 2',
+            qty: 2,
+            price: 9,
+            product_id: ObjectId('657dad00b6ff7894119b461c')
+        }
+    ]
+})

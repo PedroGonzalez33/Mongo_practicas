@@ -1,0 +1,44 @@
+// Insertar datos reference 1-N
+// Creamos otra orden de compra con el ID del otro usuario que tenemos
+db.orders.insertOne({
+    user_id: ObjectId('657cce3c4655592faef19f95'), // Referencia a un ObjectID del otro usuario
+    date: "2020-12-12",
+    items: [
+        {
+            name: 'Medias',
+            price: 20,
+            qty: 2
+        },
+        {
+            name: 'Zapatos',
+            price: 200,
+            qty: 1
+        }
+    ]
+})
+
+
+// Consultar datos reference 1-N
+// Ahora tenemos 2 ordenes asociadas al usuario '657cceae4655592faef19f96' y una orden de compra asociado al usuario '657cce3c4655592faef19f95'
+
+// Podemos usar una consulta simple usando la referencia que en este caso seria user_id y _id, el inconveniente es que hariamos 2 consultas
+db.orders.find({user_id: ObjectId('657cceae4655592faef19f96')})
+db.users.findOne({_id: ObjectId('657cceae4655592faef19f96')})
+
+
+// Tambien podemos hacerlo con agregation framework en una sola consulta
+db.orders.aggregate([
+    {
+        $match: { // Filtrar
+            _id: ObjectId('657cceae4655592faef19f96') // Order id
+        }
+    },
+    {
+	    $lookup: {
+	        from: 'users',
+	        localField: 'user_id',
+	        foreignField: '_id',
+	        as: 'user'
+	    }
+    }
+])

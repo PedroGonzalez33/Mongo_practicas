@@ -1,0 +1,41 @@
+// Insertar datos embebed 1-N
+db.orders.insertOne({
+    user_id: ObjectId('657cceae4655592faef19f96'), // Referencia a un ObjectID de un usuario
+    date: "2020-12-12",
+    items: [
+        {
+            name: 'Camiseta',
+            price: 120,
+            qty: 1
+        },
+        {
+            name: 'Pantalon',
+            price: 160,
+            qty: 2
+        }
+    ]
+})
+
+db.orders.insertOne({
+    user_id: ObjectId('657cceae4655592faef19f96'), // Referencia a un ObjectID de un usuario
+    date: "2020-12-12",
+    items: [
+        {
+            name: 'Boxer',
+            price: 60,
+            qty: 5
+        }
+    ]
+})
+
+// Consultar datos en embebed 1-N
+// Buscar el id de un usuario
+db.users.find()
+
+// Ver las ordenes de compra
+db.orders.find()
+
+// Buscar algo en concreto de las ordenes
+db.orders.find({
+  "items.name": 'Pantalon'
+})

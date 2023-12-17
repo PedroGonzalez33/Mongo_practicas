@@ -1,0 +1,50 @@
+// Insertar productos
+db.products.insertMany([
+    {
+        name: 'Product 1',
+        sizes: ['L', 'M'],
+        price: 12   
+    },
+    {
+        name: 'Product 2',
+        sizes: ['S', 'M'],
+        price: 9   
+    },
+    {
+        name: 'Product 3',
+        sizes: ['L', 'M', 'XL'],
+        price: 16   
+    },
+])
+
+
+// Insertar Tiendas
+db.stores.insertMany([
+    {
+        name: 'Store A',
+        products_ids: [
+            ObjectId("657dad00b6ff7894119b461b"),
+        ]
+    },
+    {
+        name: 'Store B',
+        products_ids: [
+            ObjectId("657dad00b6ff7894119b461b"),
+            ObjectId("657dad00b6ff7894119b461c"),
+            ObjectId("657dad00b6ff7894119b461d")
+        ]
+    },
+])
+
+
+// Usando LookUp
+db.stores.aggregate([
+    {
+        $lookup: {
+          from: 'products',
+          localField: 'products_ids', // Automaticamente detecta que es una lista
+         foreignField: '_id',
+          as: 'products'
+       }
+    }
+])

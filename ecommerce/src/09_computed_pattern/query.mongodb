@@ -1,0 +1,53 @@
+/* Se hara una orden de compra dinamica, en donde, al agregar productos a la orden esta actualizara el valor total 
+que es la suma de todos los productos multiplicado su cantidad. */
+// Creamos una nueva orden de compra
+db.orders.insertOne({
+    user_id: ObjectId('657cceae4655592faef19f96'),
+    date: '2020-12-12',
+    total: 0, // Nuevo campo que sera con el que haremos la suma de los items
+    items: [] // Normalmente empieza sin nada una orden de compra
+})
+//Guardamos el ObjectID generado
+
+
+// Creamos un script para que al agregar un item a la lista se sume automaticamente al total el precio total del producto ingresado.
+// Compra un product 1
+db.orders.updateOne( // Actualizamos la orden
+    { // Hacemos match con la orden que queremos actualizar
+        _id: ObjectId('657e608847199d276ed32fbf')   
+    },
+    {   // Agregamos un nuevo elemento
+        $push: { // Agregar elemento al array
+            items: { 
+                name: 'Product 1',
+                qty: 1,
+                price: 12,
+                product_id: ObjectId('657dad00b6ff7894119b461b')  
+            }
+        },
+        $inc: { // Incrementador
+            total: 12 * 1 // total = total + price * qty
+        }
+    }
+)
+
+
+// Compra dos product 2
+db.orders.updateOne( 
+    { 
+        _id: ObjectId('657e608847199d276ed32fbf')   
+    },
+    { 
+        $push: { 
+            items: { 
+                name: 'Product 1',
+                qty: 2,
+                price: 9,
+                product_id: ObjectId('657dad00b6ff7894119b461c')  
+            }
+        },
+        $inc: { // Incrementador
+            total: 9 * 2 
+        }
+    }
+)

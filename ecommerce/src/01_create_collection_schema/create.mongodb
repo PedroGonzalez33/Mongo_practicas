@@ -1,0 +1,82 @@
+// User
+db.createCollection('user', { // Nombre de la coleccion y dentro de { } las validaciones
+    validator: {
+        $jsonSchema: {
+            bsonType: 'object', // Los documentos que se inserten a la coleccion users seran objetos
+            required: ['email', 'password', 'role'], // Son los campos que tienen que ser completados obligatoriamente
+            properties: { // Son las propiedades de los campos que integran al documento
+                name: { // Nombre del campo
+                    bsonType: 'string', // Tipo de dato del campo
+                    description: "name must be a string" // Descripcion del campo
+                },
+                last_name: {
+                    bsonType: 'string',
+                    description: "last_name must be a string"
+                },
+                email: {
+                    bsonType: 'string',
+                    pattern: "^[A-Za-z\d.-]{1,}@[A-Za-z\d.-]{1,}[.]{1}[A-Za-z\d.-]{1,}$", // Es un patron que asegura que el email tenga la estructura de un correo
+                    description: "email must be a string and is required",
+                    uniqueItems: true // Define que el campo tiene que ser unico
+                },
+                password: {
+                    bsonType: 'string',
+                    pattern: "^.{16,40}$",
+                    description: "password must be a string and is required"
+                },
+                age: {
+                    bsonType: 'number',
+                    minimum: 18,
+                    maximum: 99
+                },
+                isSingle: {
+                    bsonType: 'bool'
+                },
+                role: {
+                    enum: ["customer", "seller", "admin"] // Campo donde tienes opciones ya definidas a elegir
+                } 
+            }
+        }
+    }
+})
+
+
+// Products
+db.createCollection('products', {
+    validator: {
+        $jsonSchema: {
+            bsonType: 'object',
+            required: ['name'],
+            properties: {
+                name: {
+                    bsonType: 'string',
+                    description: "name must be a string and is required"
+                },
+                size: {
+                    bsonType: 'array',
+                    minItems: 1, // Indica que el array tiene que tener como minimo 1 elemento
+                    uniqueItems: true, // Indica que los elementos del array tienen que ser unicos
+                    items: {
+                        bsonType: 'string' // Indica el tipo de datos de los elementos dentro del array
+                    },
+                    description: "size must be a string and need at least 1 item"
+                },
+                category: {
+                    bsonType: 'object',
+                    required: ['name'],
+                    properties: { // Anidamos las propiedades para crear reglas de subdocumentos
+                        name: {
+                            bsonType: 'string',
+                            description: "name must be a string and is required"
+                        },
+                        image: {
+                            bsonType: 'string',
+                            description: "image must be a string, has to be an external link of the image"
+                        }
+                    },
+                    description: "category of the items"
+                }
+            }
+        }
+    }
+})

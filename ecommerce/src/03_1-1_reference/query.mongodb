@@ -1,0 +1,32 @@
+// Insertar datos reference 1-1
+db.store.insertOne({ 
+    storeId: "ST001", 
+    name: "Store 1",
+    address: "Fake address 123"
+})
+
+db.store_detail.insertOne({ 
+    storeId: "ST001", 
+    description: "Very long description",
+    manager: {
+        email: "manager@gmail.com",
+        phone: "123456789"
+    }
+})
+
+// Consultar datos en reference 1-1
+// Podemos usar una consulta simple usando la referencia que en este caso seria storeId, el inconveniente es que hariamos 2 consultas
+db.store.findOne({storeId: "ST001"})
+db.store_detail.findOne({storeId: "ST001"})
+
+// Tambien podemos hacerlo con agregation framework en una sola consulta
+db.store.aggregate([
+    {
+	$lookup: {
+	    from: 'store_detail',
+	    localField: 'storeId',
+	    foreignField: 'storeId',
+	    as: 'detail'
+	}
+    }
+])
