@@ -1,0 +1,49 @@
+/* Este operador nos permite agregar campos completamente nuevos que sean dependientes o no de otros campos, 
+nos permite mostrar o no mostrar los campos que deseemos y nos permite mostrar el resultado justo como lo deseemos 
+sin necesidad de tenerlo todo en JSON. */
+
+// Ejemplo:
+db.getCollection("listingsAndReviews").aggregate([
+    {
+        $match: {
+            "address.country": "United States"
+        }
+    },
+    {
+        $sort: {
+            property_type: 1,
+            price: 1
+        }
+    },
+    {
+        $group: {
+          _id: "$property_type",
+          masBarato: {
+            $first: {
+                tipo_propiedad:"$property_type",
+                nombre: "$name",
+                precio: "$price",
+                direccion: "$address"
+            }
+          },
+          masCaro: {
+            $last: {
+                tipo_propiedad:"$property_type",
+                nombre: "$name",
+                precio: "$price",
+                direccion: "$address"
+            }
+          }
+        }
+    },
+    {
+        $project: {
+            _id:0,
+            "Tipo de propiedad": "$_id",
+            "El menor precio": "$masBarato.precio",
+            "El mayor precio": "$masCaro.precio"
+        }
+    }
+])
+
+// El _id: 0 nos permite ocultar el id por defecto que tiene el documento

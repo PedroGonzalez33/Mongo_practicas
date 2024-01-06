@@ -1,0 +1,51 @@
+/* Es un operador que genera documentos en orden del más cercano al más lejano desde un punto específico.
+Es importante que si usamos este operador si o si sea la primera etapa de nuestro pileline */
+
+db.listingsAndReviews.aggregate([
+    {
+        $geoNear: {
+            near: {
+            type: "Point",
+            coordinates: [
+                -73.95552676483872,
+                40.7994839486901
+            ]
+            },
+            distanceField: "distancia",
+            maxDistance: 30000,
+            spherical: true
+        }
+     },
+    {
+        $match: {
+            beds: {
+            $ne: 0
+            }
+        }
+    },
+    {
+        $project: {
+            _id:0,
+            distancia: 1,
+            precio : {
+            $divide: ["$price", "$beds"]
+            }
+        }
+    },
+    {
+        $group: {
+            _id: {
+            $cond: {
+                if:{
+                $lte: ["$distancia", 2000]
+                },
+                then: "menos2K",
+                else: "mas2K"
+            }
+            },
+            mediaPCama:{
+            $avg: "$precio"
+            }
+        }
+    }
+])

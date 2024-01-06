@@ -1,0 +1,21 @@
+/* Restringe la salida de documentos completos o el contenido de los mismos en función de la información almacenada en 
+los propios documentos. Este operador es mucho mas costoso que $match por esta rason solo hay que usarlo si el operdor 
+$match no nos funciona para lo que queramos filtrar */
+
+// El argumento puede ser cualquier expresión válida siempre que se resuelva en las variables del sistema $$DESCEND, $$PRUNE o $$KEEP.
+
+// Ejemplo:
+db.listingsAndReviews.aggregate([
+    {
+      $redact: {
+        $cond:{
+          if: { $gte: ["$review_scores.review_scores_rating", 95] },
+          then:"$$KEEP",
+          else: "$$PRUNE"
+        }
+      }
+    },
+    {
+      $count: "count"
+    }
+])

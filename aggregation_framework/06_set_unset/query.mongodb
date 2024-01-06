@@ -1,0 +1,69 @@
+/* Son operadores que al igual que $project se utilizan para dar formato y modelar el resultado final que queramos 
+obtener, pero a diferencia de $project este por defecto incluye todos los campos que estaban desde la ultima etapa 
+que usemos antes de $set o $unset */
+
+/* Si queremos modificar completamente la estructura de lo que queramos mostrar es mejor utilizar el operador $project 
+en cambio si solo queremos hacer pocas modificaciones manteniendo el formato de la etapa anterior es mejor uilizar 
+$set/$unset */
+
+// Ejemplo:
+db.getCollection("listingsAndReviews").aggregate([
+    {
+        $match: {
+            "address.country": "United States"
+        }
+    },
+    {
+        $sort: {
+            property_type: 1,
+            price: 1
+        }
+    },
+    {
+        $group: {
+          _id: "$property_type",
+          masBarato: {
+            $first: {
+                tipo_propiedad:"$property_type",
+                nombre: "$name",
+                precio: "$price",
+                direccion: "$address"
+            }
+          },
+          masCaro: {
+            $last: {
+                tipo_propiedad:"$property_type",
+                nombre: "$name",
+                precio: "$price",
+                direccion: "$address"
+            }
+          },
+          cantidadPropiedades: {
+            $count: {}
+          },
+          promedioPrecios: {
+            $avg: "$price"
+          }
+        }
+    },
+    {
+        $set: {
+            "Tipo de propiedad": "$_id",
+            "Cantidad de propiedades": "$cantidadPropiedades",
+            "Lo mas destacado": [ {
+                "Tipo": "Mas Barata",
+                "Nombre": "$masBarato.nombre",
+                "Precio": "$masBarato.precio"
+              },
+              {
+                "Tipo": "Mas Cara",
+                "Nombre": "$masCaro.nombre",
+                "Precio": "$masCaro.precio"
+              }
+            ]
+        }
+    },
+    {
+        $unset: ['_id', 'masBarato', 'masCaro', 'cantidadPropiedades', 'promedioPrecios']
+    }
+])

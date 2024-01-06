@@ -1,0 +1,42 @@
+// Query language:
+// Para el uso de consultas simples
+
+// Aggregation Framework:
+/* Para el uso de querys donde hay que agrupar campos, realizar calculos, 
+transformar en un solo tiempo de ejecución. */
+
+// Map-reduce: 
+/* Map-reduce está discontinuado, pero se lo sigue usando en implementaciones antiguas que todavía 
+no migraron a Aggregation Framework. */
+
+// Ejemplo usando la base de datos sample_airbnb:
+// Usando query languaje:
+db.listingsAndReviews.find({
+    last_review: {
+        $gte: new Date('2019-01-01'), 
+        $lte: new Date('2020-01-01')
+    }
+}).count()
+
+
+// Usando aggregation framework:
+db.getCollection("listingsAndReviews").aggregate([{
+    $match: {
+        last_review: {
+            $gte: new Date('2019-01-01'), 
+            $lte: new Date('2020-01-01')
+        }
+    }
+},
+{
+    $group: {
+        _id: null, 
+        Total:{$sum: 1}
+    }
+},
+{
+    $project: {_id:0}
+}]);
+
+/* En este caso es optimo utilizar las consultas comunes con el metodo find() debido a que es una consulta 
+sin tanta complejidad */

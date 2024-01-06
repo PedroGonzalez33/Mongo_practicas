@@ -1,0 +1,64 @@
+// Estos operedores los usamos comunmente dentro del operador $group para definir que operaciones se haran con los datos agrupados
+
+// $count
+// Lo usamos para realizar el conteo de todos los documentos agrupados, si tenemos 10 documentos agrupados el conteo sera de 10
+
+//$avg
+// Lo usamos para sacar el promedio de los datos requeridos de los documentos que tenemos agrupados
+
+// Ejemplo:
+db.getCollection("listingsAndReviews").aggregate([
+    {
+        $match: {
+            "address.country": "United States"
+        }
+    },
+    {
+        $sort: {
+            property_type: 1,
+            price: 1
+        }
+    },
+    {
+        $group: {
+          _id: "$property_type",
+          masBarato: {
+            $first: {
+                tipo_propiedad:"$property_type",
+                nombre: "$name",
+                precio: "$price",
+                direccion: "$address"
+            }
+          },
+          masCaro: {
+            $last: {
+                tipo_propiedad:"$property_type",
+                nombre: "$name",
+                precio: "$price",
+                direccion: "$address"
+            }
+          },
+          cantidadPropiedades: {
+            $count: {}
+          },
+          promedioPrecios: {
+            $avg: "$price"
+          }
+        }
+    },
+    {
+        $project: {
+            _id:0,
+            "Tipo de propiedad": "$_id",
+            "Cantidad de propiedades": "$cantidadPropiedades",
+            "El menor precio": "$masBarato.precio",
+            "El mayor precio": "$masCaro.precio",
+            "Precio promedio": {
+                $round: ["$promedioPrecios", 2]
+            }
+        }
+    }
+])
+
+/* Con $count realizamos el conteo de todas las propiedades agrupadas que sean iguales y con $avg sacamos el promedio 
+del precio de estas propiedades agrupadas. El $round lo utilizamos para redondiar el resultado del promedio a solo 2 decimales */

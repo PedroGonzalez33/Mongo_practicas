@@ -1,0 +1,75 @@
+/* Realiza una left outer join a una colección en la misma base de datos para filtrar documentos de la colección 
+unida" para su procesamiento. El $lookup stage agrega un nuevo campo de matriz a cada documento de entrada. 
+El nuevo campo de matriz contiene los documentos coincidentes de la colección "unida". El $lookup stage pasa estos 
+documentos remodelados a la siguiente etapa. */
+
+// Para combinar elementos de dos colecciones diferentes, utilice la etapa de canalización $unionWith.
+
+/*
+Sintaxis:
+{
+   $lookup:
+     {
+       from: <collection to join>,
+       localField: <field from the input documents>,
+       foreignField: <field from the documents of the "from" collection>,
+       as: <output array field>
+     }
+}
+*/
+
+/*
+La operación correspondería a la siguiente declaración pseudo-SQL:
+SELECT *, <output array field>
+FROM collection
+WHERE <output array field> 
+IN (
+   SELECT *
+   FROM <collection to join>
+   WHERE <foreignField> = <collection.localField>
+);
+*/
+
+// Ejemplo:
+db.customers.aggregate([
+    {
+      $lookup: {
+        from: "accounts",
+        localField: "accounts",
+        foreignField: "account_id",
+        as: "account_info"
+      }
+    },
+    {
+      $unwind: "$account_info"
+    },
+    {
+      $lookup: {
+        from: "transactions",
+        localField: "account_info.account_id",
+        foreignField: "account_id",
+        as: "account_trasactions"
+      }
+    },
+    {
+      $unwind: "$account_trasactions"
+    },
+    {
+      $group: {
+        _id: "$name",
+        total: {
+          $sum: {
+            $size: "$account_trasactions.transactions"
+          }
+        }
+      }
+    },
+    {
+      $sort: {
+        total: -1
+      }
+    },
+    {
+      $limit: 5
+    }
+])

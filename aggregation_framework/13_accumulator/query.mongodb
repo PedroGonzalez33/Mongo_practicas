@@ -1,0 +1,84 @@
+/* Define un operador de acumulador personalizado. Los acumuladores son operadores que mantienen su estado 
+(por ejemplo, totales, máximos, mínimos y datos relacionados) a medida que los documentos avanzan por el proceso. 
+Utiliza el operador $accumulator para ejecutar tus propias funciones de JavaScript para implementar un comportamiento 
+no admitido por el lenguaje de consulta MongoDB. */
+
+/* 
+$accumulator está disponible en estas etapas:
+- $bucket 
+- $bucketAuto 
+- $group 
+*/
+
+// Sintaxis:
+/*
+{
+  $accumulator: {
+    init: <code>,
+    initArgs: <array expression>,        // Optional
+    accumulate: <code>,
+    accumulateArgs: <array expression>,
+    merge: <code>,
+    finalize: <code>,                    // Optional
+    lang: <string>
+  }
+}
+*/
+
+// Ejemplo:
+// Create a sample collection named books with the following documents:
+db.books.insertMany([
+  { "_id" : 8751, "title" : "The Banquet", "author" : "Dante", "copies" : 2 },
+  { "_id" : 8752, "title" : "Divine Comedy", "author" : "Dante", "copies" : 1 },
+  { "_id" : 8645, "title" : "Eclogues", "author" : "Dante", "copies" : 2 },
+  { "_id" : 7000, "title" : "The Odyssey", "author" : "Homer", "copies" : 10 },
+  { "_id" : 7020, "title" : "Iliad", "author" : "Homer", "copies" : 10 }
+])
+
+/* The following operation groups the documents by author, and uses $accumulator to compute the average number of copies 
+across books for each author: */
+db.books.aggregate([
+{
+  $group :
+  {
+    _id : "$author",
+    avgCopies:
+    {
+      $accumulator:
+      {
+        init: function() {                        // Set the initial state
+          return { count: 0, sum: 0 }
+        },
+
+        accumulate: function(state, numCopies) {  // Define how to update the state
+          return {
+            count: state.count + 1,
+            sum: state.sum + numCopies
+          }
+        },
+
+        accumulateArgs: ["$copies"],              // Argument required by the accumulate function
+
+        merge: function(state1, state2) {         // When the operator performs a merge,
+          return {                                // add the fields from the two states
+            count: state1.count + state2.count,
+            sum: state1.sum + state2.sum
+          }
+        },
+
+        finalize: function(state) {               // After collecting the results from all documents,
+          return (state.sum / state.count)        // calculate the average
+        },
+        lang: "js"
+      }
+    }
+  }
+}
+])
+
+// Result
+// This operation returns the following result:
+/*
+{ "_id" : "Dante", "avgCopies" : 1.6666666666666667 }	
+{ "_id" : "Homer", "avgCopies" : 10 }
+*/

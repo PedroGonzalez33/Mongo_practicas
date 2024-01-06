@@ -1,0 +1,56 @@
+/* Con este operador podemos crear una coleccion completamente nueva con los resultados de nuestro pipeline, 
+lo podeos usar para exportaciones, para realizar nuevos reportes especializados, etc. */
+
+/*
+Recomendaciones:
+- Este operador tiene que ser la ultima etapa de nuestro pipelne
+- Si el nombre de la coleccion que  le coloquemos ya existe sobreescribira automaticamente esa coleccion
+- Al ejecutar este operador existira un impacto en el rendimiento debido a que crear una nueva coleccion dependiendo del tamano de esta tendra un costo de recursos significativo.
+- Al usar este operador si existen indices en la coleccion original estos no se conservan en la nueva coleccion
+- Los errores se conservaran tal cual como se colocaron en la nueva coleccion
+
+*/
+
+// Ejemplo:
+db.getCollection("listingsAndReviews").aggregate([
+    {
+        $sort: {
+          name: 1,
+          'review_scores.review_scores_rating':-1
+        }
+    },
+    {
+        $project: {
+            _id:0,
+            'Nombre Propiedad': '$name',
+            'Tipo de Propiedad': '$property_type',
+            'Calificacion': {
+            $round: [ { $divide:[ {$multiply: [ "$review_scores.review_scores_rating", { $literal: 5 } ] }, 100 ] }, 2],
+            },
+            'Camas': {
+                $cond: {
+                    if: {
+                        $eq: ['$beds', 1]
+                    },
+                    then: {
+                        $concat: [{$toString: '$beds'}, ' Cama']
+                    },
+                    else: {
+                        $concat: [{$toString: '$beds'}, ' Camas']
+                    }
+                }
+            },
+            'Precio':'$price',
+        }
+    },
+    {
+        $out: 'propieties_report'
+    }
+])
+
+/*
+Nota: 
+- El operador $cond nos sirve para hacer operaciones if-else en mongodb
+- El operador $concat nos sirve para concatenar solamente strings
+- El operador $toString nos sirve para convertir un valor a string 
+*/

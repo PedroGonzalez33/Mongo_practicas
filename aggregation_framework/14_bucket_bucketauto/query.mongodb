@@ -1,0 +1,71 @@
+// Los operadores $bucket y $bucketAuto son agrupaciones automaticos por rangos, creando subcolecciones.
+
+/*
+$bucket:  
+- Se especifican los rangos que se desea usar.
+- Es necesario la palabra reservada “default”, para considerar excepciones.
+- Los limites (“boundaries”) tienen que estar ascendemente, y estos campos tienen que estar en la colección.
+- utiliza diferentes operadores
+
+$bucketAuto: 
+- MongoDB distribuye de manera automática el resultado de la colección.
+*/
+
+// Sintaxis:
+/*
+{
+  $bucket: {
+      groupBy: <expression>,
+      boundaries: [ <lowerbound1>, <lowerbound2>, ... ],
+      default: <literal>,
+      output: {
+         <output1>: { <$accumulator expression> },
+         ...
+         <outputN>: { <$accumulator expression> }
+      }
+   }
+}
+*/
+
+/*
+{
+  $bucketAuto: {
+      groupBy: <expression>,
+      buckets: <number>,
+      output: {
+         <output1>: { <$accumulator expression> },
+         ...
+      }
+      granularity: <string>
+  }
+}
+*/
+
+// Ejemplos:
+// $bucket
+db.listingsAndReviews.aggregate([
+    {
+        $bucket: {
+            groupBy: "$review_scores.review_scores_rating",
+            boundaries: [0, 50, 70, 85, 100],
+            default: "N/A",
+            output: {
+                count: {$sum: 1}
+            }
+        }
+    }
+])
+
+
+// $bucketAuto
+db.listingsAndReviews.aggregate([
+    {
+        $bucketAuto: {
+            groupBy: "$review_scores.review_scores_rating",
+            buckets: 4,
+            output: {
+                count: { $sum: 1 }
+            }
+        }
+    }
+])

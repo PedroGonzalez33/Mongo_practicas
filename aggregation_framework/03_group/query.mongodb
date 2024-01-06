@@ -1,0 +1,50 @@
+/* Este operador separa documentos en grupos según una "group key". El resultado es un documento para cada clave de grupo única. 
+Los documentos de salida también pueden contener campos adicionales que se configuran usando expresiones del acumulador. */
+
+/* 
+Sintaxis:
+{
+ $group:
+   {
+     _id: <expression>, // Group key
+     <field1>: { <accumulator1> : <expression1> },
+     ...
+   }
+ }
+*/
+
+// Ejemplo:
+db.getCollection("listingsAndReviews").aggregate([
+    {
+        $match: {
+            "address.country": "United States"
+        }
+    },
+    {
+        $sort: {
+            property_type: 1,
+            price: 1
+        }
+    },
+    {
+        $group: {
+          _id: "$property_type",
+          masBarato: {
+            $first: {
+                tipo_propiedad:"$property_type",
+                nombre: "$name",
+                precio: "$price",
+                direccion: "$address"
+            }
+          },
+          masCaro: {
+            $last: {
+                tipo_propiedad:"$property_type",
+                nombre: "$name",
+                precio: "$price",
+                direccion: "$address"
+            }
+          }
+        }
+    }
+])

@@ -1,0 +1,87 @@
+// $match
+/* Con este operador hacemos filtrado de los documentos que tenemos en nuestras colecciones por medio de los campos 
+que le proporcionemos */
+
+// Ejemplo:
+db.getCollection("listingsAndReviews").aggregate([
+    {
+        $match: {
+          "address.country": "United States"
+        }
+    }
+])
+
+// Aqui estamos haciendo el filtrado de todos los documentos cuyo pais de la direccion sea  "United States"
+
+
+// $sort
+/* Este operador nos permite ordenar los resultados que obtenemos en cualquier coleccion por medio de un campo dado. 
+Con $sort: 1 ordenamos de forma ascendente y con $sort: -1 ordenamos de forma descendente */
+
+// Ejemplo:
+db.getCollection("listingsAndReviews").aggregate([
+    {
+        $match: {
+          "address.country": "United States"
+        }
+    },
+    {
+        $sort: {
+          price: 1 // Ordenamos los resultados de forma ascendente por el campo de price
+        }
+    }
+])
+
+
+// $limit
+// Este operador nos permite limitar los resultados obtenidos a un numero determinado
+
+// Ejemplo:
+db.getCollection("listingsAndReviews").aggregate([
+    {
+        $match: {
+          "address.country": "United States"
+        }
+    },
+    {
+        $sort: {
+          price: 1
+        }
+    },
+    {
+        $limit: 5
+    }
+])
+
+// Aqui limitamos los resultados de los documentos a 5
+
+// $project
+// Este operador nos permite realizar proyecciones en nuestra query
+
+// Ejemplo:
+db.getCollection("listingsAndReviews").aggregate([
+    {
+        $match: {
+          "address.country": "United States"
+        }
+    },
+    {
+        $sort: {
+          price: 1
+        }
+    },
+    {
+        $limit: 5
+    },
+    {
+        $project: {
+            _id: 0,
+            name: 1,
+            price: 1
+        }
+    }
+])
+
+/* En este ultimo ejemplo combinamos todos los operadores que hemos visto hasta los momentos. 
+Buscamos los documentos cuyo pais de la direccion sea  "United States", los ordenamos de manera ascendente por su precio, 
+con un limite de 5 documentos y finalmente mostramos solamente el nombre y el precio de los documentos filtrados y ordenados */

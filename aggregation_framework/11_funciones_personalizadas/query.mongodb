@@ -1,0 +1,45 @@
+/* Podemos usar el operador $function para implementar funciones personalizadas con la cual podamos hacer operaciones 
+mas avanzadas que no podamos realizar con los operadores de mongodb. Es muy importante usar este operador solamente 
+cuando sea netamente necesario ya que este consume muchos recursos y son propensos a errores debido a que no es su 
+lenguaje base, por esta razon si se implementa de mala manera puede ser perjudicial en el rendimiento de la base de 
+datos */
+
+// Sintaxis:
+/*
+{
+  $function: {
+    body: <code>,
+    args: <array expression>,
+    lang: "js" // Podemos definir diferentes lenguajes de programacion
+  }
+}
+*/
+
+// Ejemplo: 
+db.listingsAndReviews.aggregate([
+    {
+      $addFields:{
+        wordCount: {
+          $function:{
+            body:function(descripcion){
+              if(descripcion){
+                const words = descripcion.split(' ')
+                return words.length
+              }
+              else{
+                return 0
+              }
+            },
+            args: ["$description"],
+            lang: "js"
+          }
+        }
+      }
+    },
+    {
+      $group: {
+        _id: "$propery_type",
+        averageWordCount: {$avg: "$wordCount"}
+      }
+    }
+])
